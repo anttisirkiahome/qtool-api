@@ -1,6 +1,11 @@
 <?php
 header('Access-Control-Allow-Origin: *');
 require 'libraries/flightphp/flight/Flight.php';
+require 'classes/idiorm.php';
+require 'classes/poll.php';
+require 'config.php';
+
+Flight::register('poll', 'Poll');
 
 Flight::route('GET /', function(){
     echo 'OK.';
@@ -13,24 +18,18 @@ Flight::route('GET /api/', function(){
    //exit;
 });
 
-Flight::route('GET /api/latestPoll', function(){
-while(true) {
-	$time = date('r');
-	echo "data: The server time is: {$time}\n\n";
-	ob_flush();
-	flush();
-	sleep(1);
-}
+Flight::route('GET /api/poll', function(){
+	$poll = Flight::poll();
+	echo json_encode($poll->getLatestPoll());
 });
 
-Flight::route('/api/poll', function(){
-	
+Flight::route('POST /api/poll', function(){
+	$poll = Flight::poll();
+
 	$r = Flight::request();
 	$r = json_decode($r->body, true);
-	#var_dump($r);
-   	#print_r($r['q']);
 
-	echo json_encode(['success' => true]);
+	echo json_encode(['success' => $poll->savePoll($r['q']), 'poll' => $r['q']]);
    
 });
 
