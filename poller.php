@@ -4,8 +4,8 @@ header('Content-Type: text/event-stream');
 header('Cache-Control: no-cache');
 header('Connection: keep-alive');
 require 'classes/idiorm.php';
-require 'classes/poll.php';
 require 'config.php';
+require 'classes/poll.php';
 
 while(true) {
 
@@ -18,9 +18,11 @@ while(true) {
 	//if no new polls..
 	//$ret = array('success' => juu);
 	//$ret = array('s' => true);  
-	
-	$kissa = rand(0,20);         
-	echo "data: " . json_encode(array('j' => $kissa, 'newPoll' => true)) . " \n\n";
+	$poll = new Poll();
+
+	$kissa = rand(0,1000);         
+	echo "data: " . json_encode(array('j' => $kissa, 'newPoll' => $poll->getLatestPoll())) . " \n\n";
+	//echo "data: " . json_encode(array('j' => $kissa, 'newPoll' => 'moi')) . " \n\n";
 	ob_flush();
 	flush();
 	sleep(1);
