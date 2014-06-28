@@ -1,4 +1,5 @@
 <?php
+session_start();
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT');
 require 'libraries/flightphp/flight/Flight.php';
@@ -28,7 +29,12 @@ Flight::route('PUT|OPTIONS /api/poll', function(){
 	$poll = Flight::poll();
 	$r = Flight::request();
 	$r = json_decode($r->body, true);
-	echo json_encode($poll->publishPoll($r['updateId']));
+	if(isset($r['type'])) {
+		echo json_encode($poll->vote($r['updateId']));
+	} else {
+		echo json_encode($poll->publishPoll($r['updateId']));	
+	}
+	
 });
 
 Flight::route('POST /api/poll', function(){

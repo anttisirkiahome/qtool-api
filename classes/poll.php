@@ -1,31 +1,28 @@
 <?php
 
-
 class Poll {
+
+	public function vote($id) {
+		if(isset($id)) {
+			$people = ORM::for_table('answer')->raw_query('UPDATE answer SET votes=votes+1 WHERE ID = :id', array('id' => $id))->find_one();
+		}
+	}
 
 	public function publishPoll($id) {
 		if(isset($id)) {
-			#var_dump(intval($id));
-			$people = ORM::for_table('person')->raw_query('UPDATE poll SET publishtime= NOW(), published = TRUE WHERE ID = :id', array('id' => $id))->find_many();
-	
-			#$t = ORM::for_table('poll')->find_one(68);
-			#$t->creator_ID = 3;
-			#$t->save();
-			#	var_dump($t);
-		#if($update->id) return true;
-		#return false;
+			$people = ORM::for_table('poll')->raw_query('UPDATE poll SET publishtime= NOW(), published = TRUE WHERE ID = :id', array('id' => $id))->find_one();
 		}
-
-		
 	}
 
 	public function getLatestPoll() {
+
 		$latestId = ORM::for_table('poll')->max('ID');
 		$ret = array();
 
 		$latestPoll = ORM::for_table('poll')
 			->left_outer_join('answer', array('answer.poll_ID', '=', 'poll.ID'))
-			->select_many('poll.ID', 'poll.duration', 'poll.created', 'poll.publishtime', 'poll.published', 'poll.question', 'poll.theme', 'answer.answer')
+			->left_outer_join('themes', array('poll.theme' , '=', 'themes.ID'))
+			->select_many('poll.ID', array('answer_id' => 'answer.ID'), 'answer.votes', 'poll.duration', 'poll.created', 'themes.url', 'poll.publishtime', 'poll.published', 'poll.question', 'poll.theme', 'answer.answer', 'answer.order')
 			->where('poll.ID', $latestId)
 			->find_array();
 
@@ -44,10 +41,11 @@ class Poll {
 				$ret['published']	=$latestPoll[0]['published'];
 				$ret['success'] 	= true;
 				$ret['question'] 	= $latestPoll[0]['question'];
-				$ret['theme'] 		= $latestPoll[0]['theme'];
+				$ret['theme'] 		= $latestPoll[0]['url'];
 
 				foreach ($latestPoll as $poll) {
-					$ret['answers'][] = array('answer' => $poll['answer'], 'order' => $poll['order']); 
+
+					$ret['answers'][] = array('answer' => $poll['answer'], 'votes' =>$poll['votes'], 'order' => $poll['order'], 'id' => $poll['answer_id']); 
 				}
 
 			} else {
