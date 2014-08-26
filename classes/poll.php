@@ -9,7 +9,11 @@ class Poll {
 
 	public function vote($id) {
 		if(isset($id)) {
-			$people = ORM::for_table('answer')->raw_query('UPDATE answer SET votes=votes+1 WHERE ID = :id', array('id' => $id))->find_one();
+			$pdo = ORM::get_db();
+			$raw_query = 'UPDATE Answer SET votes=votes+1 WHERE ID = ?';
+			$raw_parameters = array($id);
+			$statement = $pdo->prepare($raw_query);
+			return $statement->execute($raw_parameters);
 		}
 	}
 
@@ -57,10 +61,12 @@ class Poll {
 				$ret['question'] 	= $latestPoll[0]['question'];
 				$ret['theme'] 		= $latestPoll[0]['url'];
 
+				$tempTotalVotes = 0;
 				foreach ($latestPoll as $poll) {
-
+					$tempTotalVotes += $poll['votes'];
 					$ret['answers'][] = array('answer' => $poll['answer'], 'votes' =>$poll['votes'], 'order' => $poll['order'], 'id' => $poll['answer_id']); 
 				}
+				$ret['totalVotes'] = $tempTotalVotes;
 
 			} else {
 				$ret['success'] = false;	

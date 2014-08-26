@@ -35,7 +35,7 @@ Flight::route('PUT|OPTIONS /api/poll', function(){
 	$r = Flight::request();
 	$r = json_decode($r->body, true);
 	if(isset($r['type'])) {
-		echo json_encode($poll->vote($r['updateId']));
+		echo json_encode(['success' => $poll->vote($r['updateId'])]);
 	} else {
 		echo json_encode(['success' => $poll->publishPoll($r['updateId'], $r['duration'])]);	
 	}
