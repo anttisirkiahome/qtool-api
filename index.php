@@ -20,6 +20,11 @@ Flight::route('GET /api/', function(){
    //exit;
 });
 
+Flight::route('GET /api/poll/themes', function(){
+	$poll = Flight::poll();
+	echo json_encode($poll->getThemes());
+});
+
 Flight::route('GET /api/poll', function(){
 	$poll = Flight::poll();
 	echo json_encode($poll->getLatestPoll());
@@ -32,7 +37,7 @@ Flight::route('PUT|OPTIONS /api/poll', function(){
 	if(isset($r['type'])) {
 		echo json_encode($poll->vote($r['updateId']));
 	} else {
-		echo json_encode($poll->publishPoll($r['updateId']));	
+		echo json_encode(['success' => $poll->publishPoll($r['updateId'], $r['duration'])]);	
 	}
 	
 });
@@ -62,6 +67,14 @@ Flight::route('POST /api/auth/', function(){
     	//doesnt -> 401
 		    //header('HTTP/1.0 401 Unauthorized');
   			//exit;
+});
+
+
+/* TEST */
+
+Flight::route('GET /api/poll/test/publishPoll', function(){
+	$poll = Flight::poll();
+	echo json_encode($poll->publishPoll(49));
 });
 
 Flight::start();

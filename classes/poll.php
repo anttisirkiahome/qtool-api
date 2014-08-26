@@ -2,15 +2,24 @@
 
 class Poll {
 
+	public function getThemes() {
+		$themes = ORM::for_table('themes')->find_array();
+		return $themes;
+	}
+
 	public function vote($id) {
 		if(isset($id)) {
 			$people = ORM::for_table('answer')->raw_query('UPDATE answer SET votes=votes+1 WHERE ID = :id', array('id' => $id))->find_one();
 		}
 	}
 
-	public function publishPoll($id) {
+	public function publishPoll($id, $duration) {
 		if(isset($id)) {
-			$people = ORM::for_table('poll')->raw_query('UPDATE poll SET publishtime= NOW(), published = TRUE WHERE ID = :id', array('id' => $id))->find_one();
+			$pdo = ORM::get_db();
+			$raw_query = 'UPDATE Poll SET publishtime= NOW(), published = TRUE, expirationtime= DATE_ADD(NOW(), INTERVAL ? SECOND) WHERE ID = ?';
+			$raw_parameters = array($duration, $id);
+			$statement = $pdo->prepare($raw_query);
+			return $statement->execute($raw_parameters);
 		}
 	}
 
@@ -19,14 +28,18 @@ class Poll {
 		$latestId = ORM::for_table('poll')->max('ID');
 		$ret = array();
 
-		$latestPoll = ORM::for_table('poll')
+		$latestPoll = ORM::for_table('Poll')
 			->left_outer_join('answer', array('answer.poll_ID', '=', 'poll.ID'))
 			->left_outer_join('themes', array('poll.theme' , '=', 'themes.ID'))
-			->select_many('poll.ID', array('answer_id' => 'answer.ID'), 'answer.votes', 'poll.duration', 'poll.created', 'themes.url', 'poll.publishtime', 'poll.published', 'poll.question', 'poll.theme', 'answer.answer', 'answer.order')
+			->select_many('poll.ID', array('answer_id' => 'answer.ID'), 'answer.votes', 'poll.duration', 'poll.created', 'themes.url', 'poll.publishtime', 'poll.published', 'poll.question', 'poll.expirationtime', 'poll.theme', 'answer.answer', 'answer.order')
 			->where('poll.ID', $latestId)
 			->find_array();
 
 			if(isset($latestPoll)) {
+
+				$curTime = ORM::for_table('Poll')->raw_query('SELECT NOW() AS n')->find_one();
+				$currentTime = strtotime($curTime->n);
+
 				//FIXME dont save duration as a string
 				//value of ret[duration] is in seconds
 				$ret['duration'] = intval(substr($latestPoll[0]['duration'], 1,2)) * 60 + intval(substr($latestPoll[0]['duration'], 3,2));
@@ -34,8 +47,9 @@ class Poll {
 				$ret['publishTime'] = strtotime($latestPoll[0]['publishtime']);
 				$ret['expired'] = true;
 				$ret['ID'] = $latestPoll[0]['ID'];
+				$ret['expirationTime'] = strtotime($latestPoll[0]['expirationtime']);		
 
-				if($ret['publishTime'] && $ret['publishTime'] + $ret['duration'] > time()) {
+				if($ret['publishTime'] && $ret['expirationTime'] && ($currentTime < ($ret['duration'] + $ret['publishTime']) ) ) {
 					$ret['expired'] = false;
 				}
 				$ret['published']	=$latestPoll[0]['published'];
@@ -56,7 +70,7 @@ class Poll {
 	}
 
 	public function savePoll($poll) {
-		if( !isset($poll) || !isset($poll['duration']) || !isset($poll['question']) || !isset($poll['theme']) || !isset($poll['answers']) ) {
+		if( !isset($poll) || !isset($poll['question']) || !isset($poll['theme']) || !isset($poll['answers']) ) {
 			return false;
 		}  else {
 			$theme = ORM::for_table('themes')->where('name', $poll['theme'])->find_one();
