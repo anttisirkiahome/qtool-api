@@ -1,54 +1,36 @@
-
 #client {
-    width: 800px;
-    min-height: 300px;
-    margin-top: 120px;
-    overflow: auto;
-    padding: 2%;
-    border: 1px solid #000;
-    position: relative;
-
-    .pollAnswerContainer {
-       
-        bottom: 26px;
-        width: 100%;
-        overflow: auto;
-
-        .voteBar {
-            
-            height: 100%;
-            line-height: 42px;
-            text-align: center;
-  
-        }
-        .answer {
-
-        }
-
-        ul {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            width: 100%;
-
-            li {
-                padding: 12px 0px;
-                margin: 16px 0px;
-                height: 64px;
-                
-                .voteBar {
-            
-                    height: 100%;
-                    line-height: 42px;
-                    text-align: center;
-                   
-                }
-            }
-        }    
-    }
-    
+  width: 800px;
+  min-height: 300px;
+  margin-top: 120px;
+  overflow: auto;
+  padding: 2%;
+  border: 1px solid #000;
+  position: relative;
 }
-
-#kissa {
-	background-color: #000;
+#client .pollAnswerContainer {
+  bottom: 26px;
+  width: 100%;
+  overflow: auto;
+}
+#client .pollAnswerContainer .voteBar {
+  height: 100%;
+  line-height: 42px;
+  text-align: center;
+}
+#client .pollAnswerContainer ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+#client .pollAnswerContainer ul li {
+  padding: 12px 0px;
+  margin: 16px 0px;
+  height: 64px;
+}
+#client .pollAnswerContainer ul li .voteBar {
+  height: 100%;
+  line-height: 42px;
+  text-align: center;
+  background-color: #000;
 }

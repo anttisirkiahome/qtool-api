@@ -60,7 +60,7 @@ class Poll {
 				$ret['success'] 	= true;
 				$ret['question'] 	= $latestPoll[0]['question'];
 				$ret['theme'] 		= $latestPoll[0]['url'];
-
+				$ret['debuggggggg'] = $_SESSION;
 				$tempTotalVotes = 0;
 				foreach ($latestPoll as $poll) {
 					$tempTotalVotes += $poll['votes'];
