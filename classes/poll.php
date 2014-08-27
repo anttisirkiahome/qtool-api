@@ -60,6 +60,7 @@ class Poll {
 				if($ret['created'] && $ret['expirationTime'] && ($currentTime < ($ret['duration'] + $ret['created']) ) ) {
 					$ret['expired'] = false;
 				}
+				$ret['timeLeft'] = ($ret['duration'] + $ret['created']) - $currentTime;
 				$ret['published']	=$latestPoll[0]['published'];
 				$ret['success'] 	= true;
 				$ret['question'] 	= $latestPoll[0]['question'];
