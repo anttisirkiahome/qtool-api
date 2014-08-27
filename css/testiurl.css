@@ -1,3 +1,4 @@
+/*
 #client {
   width: 800px;
   min-height: 300px;
@@ -33,4 +34,10 @@
   line-height: 42px;
   text-align: center;
   background-color: blue;
+}
+
+*/
+
+.pollAnswerContainer button {
+	background-color: blue;
 }

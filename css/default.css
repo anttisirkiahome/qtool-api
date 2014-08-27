@@ -1,7 +1,8 @@
+/*
 #client {
-  width: 800px;
+  width: 100%;
   min-height: 300px;
-  margin-top: 120px;
+
   overflow: auto;
   padding: 2%;
   border: 1px solid #000;
@@ -33,4 +34,10 @@
   line-height: 42px;
   text-align: center;
   background-color: #000;
+}
+
+*/
+
+.pollAnswerContainer button {
+	background-color: red;
 }

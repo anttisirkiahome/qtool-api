@@ -29,6 +29,8 @@ class Poll {
 
 	public function getLatestPoll() {
 
+
+
 		$latestId = ORM::for_table('poll')->max('ID');
 		$ret = array();
 
@@ -40,6 +42,8 @@ class Poll {
 			->find_array();
 
 			if(isset($latestPoll)) {
+
+
 
 				$curTime = ORM::for_table('Poll')->raw_query('SELECT NOW() AS n')->find_one();
 				$currentTime = strtotime($curTime->n);
@@ -53,14 +57,13 @@ class Poll {
 				$ret['ID'] = $latestPoll[0]['ID'];
 				$ret['expirationTime'] = strtotime($latestPoll[0]['expirationtime']);		
 
-				if($ret['publishTime'] && $ret['expirationTime'] && ($currentTime < ($ret['duration'] + $ret['publishTime']) ) ) {
+				if($ret['created'] && $ret['expirationTime'] && ($currentTime < ($ret['duration'] + $ret['created']) ) ) {
 					$ret['expired'] = false;
 				}
 				$ret['published']	=$latestPoll[0]['published'];
 				$ret['success'] 	= true;
 				$ret['question'] 	= $latestPoll[0]['question'];
 				$ret['theme'] 		= $latestPoll[0]['url'];
-				$ret['debuggggggg'] = $_SESSION;
 				$tempTotalVotes = 0;
 				foreach ($latestPoll as $poll) {
 					$tempTotalVotes += $poll['votes'];
@@ -76,34 +79,41 @@ class Poll {
 	}
 
 	public function savePoll($poll) {
-		if( !isset($poll) || !isset($poll['question']) || !isset($poll['theme']) || !isset($poll['answers']) ) {
-			return false;
-		}  else {
-			$theme = ORM::for_table('themes')->where('name', $poll['theme'])->find_one();
-			if(!isset($theme->ID)) {
-				return false;
-			}
-			//FIXME missing user_id
-			$newPoll = ORM::for_table('poll')->create();
-			$newPoll->duration = $poll['duration'];
-			$newPoll->theme = $theme->ID;
-			$newPoll->question = $poll['question'];
-			$newPoll->save();
+	
+		//find the correct theme_ID
+		$theme = ORM::for_table('themes')->where('name', $poll['theme'])->find_one();
 
-			$pollId = $newPoll->id();
+		$newPoll = ORM::for_table('poll')->create();
 
-			$i = 1;
-			foreach ($poll['answers'] as &$answer) {
-				$answers = ORM::for_table('answer')->create();
-				$answers->answer = $answer;
-				$answers->order = $i;
-				$answers->poll_ID = $pollId;
-				$answers->save();	
-				$i++;
-			}
-			
-			return true;	
+		$newPoll->duration = $poll['duration'];
+		$newPoll->theme = $theme->ID;
+		$newPoll->question = $poll['question'];
+		$newPoll->published = true;
+		$newPoll->save();
+
+		$pollId = $newPoll->id();
+
+		$i = 1;
+		foreach ($poll['answers'] as &$answer) {
+			$answers = ORM::for_table('answer')->create();
+			$answers->answer = $answer;
+			$answers->order = $i;
+			$answers->poll_ID = $pollId;
+			$answers->save();	
+			$i++;
 		}
+
+		$duration = intval(substr($poll['duration'], 1,2)) * 60 + intval(substr($poll['duration'], 3,2));
+
+		$pdo = ORM::get_db();
+		$raw_query = 'UPDATE Poll SET expirationtime= DATE_ADD(NOW(), INTERVAL ? SECOND) WHERE ID = ?';
+		$raw_parameters = array($duration, $pollId);
+		$statement = $pdo->prepare($raw_query);
+		$statement->execute($raw_parameters);
+		
+		return true;	
+		
+
 	}
 
 }

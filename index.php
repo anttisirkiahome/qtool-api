@@ -77,4 +77,8 @@ Flight::route('GET /api/poll/test/publishPoll', function(){
 	echo json_encode($poll->publishPoll(49));
 });
 
+Flight::route('GET /api/poll/test/getLatestPoll', function(){
+	$poll = Flight::poll();
+	echo json_encode($poll->getLatestPoll());
+});
 Flight::start();
