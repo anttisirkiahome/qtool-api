@@ -7,6 +7,10 @@ class Poll {
 		return $themes;
 	}
 
+	public function getHistory() {
+		
+	}
+
 	public function vote($id) {
 		if(isset($id)) {
 			$pdo = ORM::get_db();
@@ -29,8 +33,6 @@ class Poll {
 
 	public function getLatestPoll() {
 
-
-
 		$latestId = ORM::for_table('poll')->max('ID');
 		$ret = array();
 
@@ -42,8 +44,6 @@ class Poll {
 			->find_array();
 
 			if(isset($latestPoll)) {
-
-
 
 				$curTime = ORM::for_table('Poll')->raw_query('SELECT NOW() AS n')->find_one();
 				$currentTime = strtotime($curTime->n);

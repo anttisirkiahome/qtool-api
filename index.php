@@ -20,6 +20,10 @@ Flight::route('GET /api/', function(){
    //exit;
 });
 
+Flight::route('GET /api/poll/history', function(){
+	echo 'mo';
+});
+
 Flight::route('GET /api/poll/themes', function(){
 	$poll = Flight::poll();
 	echo json_encode($poll->getThemes());
