@@ -21,7 +21,8 @@ Flight::route('GET /api/', function(){
 });
 
 Flight::route('GET /api/poll/history', function(){
-	echo 'mo';
+	$poll = Flight::poll();
+	echo json_encode(['response' => $poll->getHistory()]);
 });
 
 Flight::route('GET /api/poll/themes', function(){

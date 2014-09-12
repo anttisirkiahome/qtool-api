@@ -8,7 +8,13 @@ class Poll {
 	}
 
 	public function getHistory() {
-		
+		$history = ORM::for_table('Poll')
+			->left_outer_join('answer', array('answer.poll_ID', '=', 'poll.ID'))
+			->left_outer_join('themes', array('poll.theme' , '=', 'themes.ID'))
+			->select_many('poll.ID', array('answer_id' => 'answer.ID'), 'answer.votes', 'poll.duration', 'poll.created', 'themes.url', 'poll.publishtime', 'poll.published', 'poll.question', 'poll.expirationtime', 'poll.theme', 'answer.answer', 'answer.order')
+			->find_array();	
+
+		return $history;
 	}
 
 	public function vote($id) {
