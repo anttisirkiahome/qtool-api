@@ -34,7 +34,7 @@ Flight::route('GET /api/poll', function(){
 	$poll = Flight::poll();
 	echo json_encode($poll->getLatestPoll());
 });
-
+ 
 Flight::route('PUT|OPTIONS /api/poll', function(){
 	$poll = Flight::poll();
 	$r = Flight::request();
