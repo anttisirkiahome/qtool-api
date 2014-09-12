@@ -1,5 +1,4 @@
 <?php
-ini_set('display_errors', 1); error_reporting(~0);
 session_start();
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT');
@@ -41,9 +40,9 @@ Flight::route('PUT|OPTIONS /api/poll', function(){
 	$r = Flight::request();
 	$r = json_decode($r->body, true);
 	if(isset($r['type'])) {
-		echo json_encode(['success' => $poll->vote($r['updateId'])]);
+		echo json_encode(array('success' => $poll->vote($r['updateId'])));
 	} else {
-		echo json_encode(['success' => $poll->publishPoll($r['updateId'], $r['duration'])]);	
+		echo json_encode(array('success' => $poll->publishPoll($r['updateId'], $r['duration'])));	
 	}
 	
 });
@@ -54,7 +53,7 @@ Flight::route('POST /api/poll', function(){
 	$r = Flight::request();
 	$r = json_decode($r->body, true);
 
-	echo json_encode(['success' => $poll->savePoll($r['q']), 'poll' => $r['q']]);
+	echo json_encode(array('success' => $poll->savePoll($r['q']), 'poll' => $r['q']]));
    
 });
 
