@@ -1,5 +1,5 @@
 <?php
-require 'libraries/flightphp/Flight.php';
+require 'libraries/flightphp/flight/Flight.php';
 
 Flight::route('/', function(){
     echo 'hello world!';
