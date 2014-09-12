@@ -1,7 +1,7 @@
 <?php
 session_start();
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT');
+//header('Access-Control-Allow-Origin: *');
+//header('Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT');
 require './libraries/flightphp/flight/Flight.php';
 require './classes/idiorm.php';
 require './classes/poll.php';
