@@ -3,9 +3,9 @@ session_start();
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT');
 require './libraries/flightphp/flight/Flight.php';
-require 'classes/idiorm.php';
-require 'classes/poll.php';
-require 'config.php';
+require './classes/idiorm.php';
+require './classes/poll.php';
+require './config.php';
 
 Flight::register('poll', 'Poll');
 
@@ -20,7 +20,7 @@ Flight::route('GET /api/', function(){
    //exit;
 });
 
-Flight::route('GET /api/poll/history', function(){
+Flight::route('GET /api/poll/history', function() {
 	$poll = Flight::poll();
 	echo json_encode(['response' => $poll->getHistory()]);
 });
